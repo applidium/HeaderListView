@@ -1,0 +1,1 @@
+Get HeaderListView and bring sections with "sticky" headers to your ListView.
