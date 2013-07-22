@@ -101,6 +101,10 @@ public class HeaderListView extends RelativeLayout {
 
             updateScrollBar();
 
+            if (totalItemCount > 0 && firstVisibleItem == 0) {
+                addSectionHeader(0);
+            }
+
             int realFirstVisibleItem = getRealFirstVisibleItem(firstVisibleItem, visibleItemCount);
             if (totalItemCount > 0 && previousFirstVisibleItem != realFirstVisibleItem) {
                 direction = realFirstVisibleItem - previousFirstVisibleItem;
@@ -116,10 +120,6 @@ public class HeaderListView extends RelativeLayout {
                     lastResetSection = actualSection;
                     addSectionHeader(actualSection);
                     mHeader.requestLayout();
-                }
-
-                if (firstVisibleItem == 0) {
-                    addSectionHeader(0);
                 }
 
                 previousFirstVisibleItem = realFirstVisibleItem;
