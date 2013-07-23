@@ -130,7 +130,7 @@ public abstract class SectionAdapter extends BaseAdapter implements OnItemClickL
      * Returns the row index of the indicated cell Should not be call with
      * positions directing to section headers
      */
-    private int getRowInSection(int position) {
+    protected int getRowInSection(int position) {
         int section = getSection(position);
         int row = position - numberOfCellsBeforeSection(section);
         if (hasSectionHeaderView(section)) {

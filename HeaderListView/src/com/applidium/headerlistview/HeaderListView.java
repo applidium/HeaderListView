@@ -110,16 +110,21 @@ public class HeaderListView extends RelativeLayout {
                 direction = realFirstVisibleItem - previousFirstVisibleItem;
 
                 actualSection = mAdapter.getSection(realFirstVisibleItem);
+                
+                boolean prevHasHeader = mAdapter.hasSectionHeaderView(actualSection - 1);
+                boolean currIsHeader = mAdapter.isSectionHeader(realFirstVisibleItem);
+                boolean currHasHeader = mAdapter.hasSectionHeaderView(actualSection);
+                boolean currIsFirst = mAdapter.getRowInSection(realFirstVisibleItem) == 0;
 
-                if (mAdapter.isSectionHeader(realFirstVisibleItem)) {
-                    scrollingStart = true;
-                    doneMeasuring = false;
-                    lastResetSection = -1;
-                } else if (lastResetSection != actualSection) {
-                    scrollingStart = false;
-                    lastResetSection = actualSection;
-                    addSectionHeader(actualSection);
+                boolean needScrolling = currIsFirst && !currHasHeader && prevHasHeader && realFirstVisibleItem != firstVisibleItem;
+                                
+                if (currIsHeader && !prevHasHeader) {
+                    resetHeader(direction < 0 ? actualSection - 1 : actualSection);
                     mHeader.requestLayout();
+                } else if (currIsHeader || needScrolling) {
+                    startScrolling();
+                } else if (lastResetSection != actualSection) {
+                    resetHeader(actualSection);
                 }
 
                 previousFirstVisibleItem = realFirstVisibleItem;
@@ -144,7 +149,21 @@ public class HeaderListView extends RelativeLayout {
             }
         }
 
+        private void startScrolling() {
+            scrollingStart = true;
+            doneMeasuring = false;
+            lastResetSection = -1;
+        }
+
+        private void resetHeader(int section) {
+            scrollingStart = false;
+            addSectionHeader(section);
+            mHeader.requestLayout();
+            lastResetSection = section;
+        }
+
         private void setMeasurements(int realFirstVisibleItem, int firstVisibleItem) {
+
             if (direction > 0) {
                 nextH = realFirstVisibleItem >= firstVisibleItem ? mListView.getChildAt(realFirstVisibleItem - firstVisibleItem).getMeasuredHeight() : 0;
             }
@@ -186,17 +205,22 @@ public class HeaderListView extends RelativeLayout {
             if (previousHeader != null) {
                 mHeader.removeViewAt(0);
             }
-            
-            View header = mAdapter.getSectionHeaderView(actualSection, null, null);
-            header.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
-            header.measure(MeasureSpec.makeMeasureSpec(mHeader.getWidth(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            if (mAdapter.hasSectionHeaderView(actualSection)) {
+                View header = mAdapter.getSectionHeaderView(actualSection, null, null);
+                header.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
-            mHeader.getLayoutParams().height = header.getMeasuredHeight();
-            header.scrollTo(0, 0);
-            mHeader.scrollTo(0, 0);
+                header.measure(MeasureSpec.makeMeasureSpec(mHeader.getWidth(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 
-            mHeader.addView(header, 0);
+                mHeader.getLayoutParams().height = header.getMeasuredHeight();
+                header.scrollTo(0, 0);
+                mHeader.scrollTo(0, 0);
+                mHeader.addView(header, 0);
+            } else {
+                mHeader.getLayoutParams().height = 0;
+                mHeader.scrollTo(0, 0);
+            }
+
             mScrollView.bringToFront();
         }
 
@@ -208,7 +232,7 @@ public class HeaderListView extends RelativeLayout {
             for (relativeIndex = 0; relativeIndex < visibleItemCount && totalHeight < mHeader.getHeight(); relativeIndex++) {
                 totalHeight += mListView.getChildAt(relativeIndex).getHeight();
             }
-            int realFVI = firstVisibleItem + relativeIndex - 1;
+            int realFVI = Math.max(firstVisibleItem, firstVisibleItem + relativeIndex - 1);
             return realFVI;
         }
     }
