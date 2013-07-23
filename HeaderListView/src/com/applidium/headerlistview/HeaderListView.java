@@ -16,7 +16,6 @@ import android.widget.RelativeLayout;
 
 public class HeaderListView extends RelativeLayout {
 
-    // TODO: Handle the case where a section has no header
     // TODO: Handle the case where the ListView has a header view
     // TODO: Handle listViews with fast scroll
     // TODO: Pass ListView XML attributes to the mListView
@@ -91,6 +90,7 @@ public class HeaderListView extends RelativeLayout {
         private View           previous;
         private View           next;
         private AlphaAnimation fadeOut                  = new AlphaAnimation(1f, 0f);
+        private boolean        noHeaderUpToHeader       = false;
 
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -110,20 +110,27 @@ public class HeaderListView extends RelativeLayout {
                 direction = realFirstVisibleItem - previousFirstVisibleItem;
 
                 actualSection = mAdapter.getSection(realFirstVisibleItem);
-                
-                boolean prevHasHeader = mAdapter.hasSectionHeaderView(actualSection - 1);
+
                 boolean currIsHeader = mAdapter.isSectionHeader(realFirstVisibleItem);
+                boolean prevHasHeader = mAdapter.hasSectionHeaderView(actualSection - 1);
+                boolean nextHasHeader = mAdapter.hasSectionHeaderView(actualSection + 1);
                 boolean currHasHeader = mAdapter.hasSectionHeaderView(actualSection);
+                boolean currIsLast = mAdapter.getRowInSection(realFirstVisibleItem) == mAdapter.numberOfRows(actualSection) - 1;
                 boolean currIsFirst = mAdapter.getRowInSection(realFirstVisibleItem) == 0;
 
                 boolean needScrolling = currIsFirst && !currHasHeader && prevHasHeader && realFirstVisibleItem != firstVisibleItem;
-                                
+                boolean needNoHeaderUpToHeader = currIsLast && currHasHeader && !nextHasHeader && realFirstVisibleItem == firstVisibleItem && Math.abs(mListView.getChildAt(0).getTop()) >= mListView.getChildAt(0).getHeight() / 2;
+
                 if (currIsHeader && !prevHasHeader) {
+                    noHeaderUpToHeader = false;
                     resetHeader(direction < 0 ? actualSection - 1 : actualSection);
-                    mHeader.requestLayout();
                 } else if (currIsHeader || needScrolling) {
+                    noHeaderUpToHeader = false;
                     startScrolling();
+                } else if (needNoHeaderUpToHeader) {
+                    noHeaderUpToHeader = true;
                 } else if (lastResetSection != actualSection) {
+                    noHeaderUpToHeader = false;
                     resetHeader(actualSection);
                 }
 
@@ -146,6 +153,14 @@ public class HeaderListView extends RelativeLayout {
                     mHeader.getLayoutParams().height = headerH;
                     mHeader.requestLayout();
                 }
+            }
+
+            if (noHeaderUpToHeader) {
+                if (lastResetSection != actualSection) {
+                    addSectionHeader(actualSection);
+                    lastResetSection = actualSection + 1;
+                }
+                mHeader.scrollTo(0, mHeader.getLayoutParams().height - (mListView.getChildAt(0).getHeight() + mListView.getChildAt(0).getTop()));
             }
         }
 
