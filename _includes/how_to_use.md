@@ -15,19 +15,15 @@ HeaderListView
 Public API
 ----------
 
-###Constructors###
-
-`HeaderListView(Context)`
-
-`HeaderListView(Context, AttributeSet)`
-
-###Getters###
-
-`ListView getListView()`
-
-###Setters###
-
-`void setAdapter(SectionAdapter)`
+~~~java
+//Constructors
+HeaderListView(Context)
+HeaderListView(Context, AttributeSet)
+//Getters
+ListView getListView()
+//Setters
+void setAdapter(SectionAdapter)
+~~~
 
 SectionAdapter
 ==============
@@ -37,29 +33,20 @@ SectionAdapter
 Public API
 ----------
 
-`abstract int numberOfSections()`
-
-`abstract int numberOfRows(int)`
-
-`abstract View getRowView(int, int, View, ViewGroup)`
-
-`abstract Object getRowItem(int, int)`
-
-`boolean hasSectionHeaderView(int)`
-
-`View getSectionHeaderView(int, View, ViewGroup)`
-
-`Object getSectionHeaderItem(int)`
-
-`int getRowViewTypeCount()`
-
-`int getRowItemViewType(int, int)`
-
-`int getSectionHeaderViewTypeCount()`
-
-`int getSectionHeaderItemViewType(int)`
-
-`void onRowItemClick(AdapterView<?>, View, int, int, long)`
+~~~java
+abstract int numberOfSections()
+abstract int numberOfRows(int)
+abstract View getRowView(int, int, View, ViewGroup)
+abstract Object getRowItem(int, int)
+boolean hasSectionHeaderView(int)
+View getSectionHeaderView(int, View, ViewGroup)
+Object getSectionHeaderItem(int)
+int getRowViewTypeCount()
+int getRowItemViewType(int, int)
+int getSectionHeaderViewTypeCount()
+int getSectionHeaderItemViewType(int)
+void onRowItemClick(AdapterView<?>, View, int, int, long)
+~~~
 
 Future work
 ===========
