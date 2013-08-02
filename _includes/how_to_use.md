@@ -51,8 +51,6 @@ void onRowItemClick(AdapterView<?>, View, int, int, long)
 Future work
 ===========
 
-  - Handle the case where a section has no header
-  - Handle the case where the ListView has a header view
   - Handle listViews with fast scroll
   - Pass ListView XML attributes to the mListView
   - See if there are methods to dispatch to mListView
