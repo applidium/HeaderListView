@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -45,6 +46,13 @@ public class HeaderListView extends RelativeLayout {
         mListView.setLayoutParams(listParams);
         mListView.setOnScrollListener(new HeaderListViewOnScrollListener());
         mListView.setVerticalScrollBarEnabled(false);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mAdapter != null)
+                    mAdapter.onItemClick(parent, view, position, id);
+            }
+        });
         addView(mListView);
 
         mHeader = new RelativeLayout(getContext());

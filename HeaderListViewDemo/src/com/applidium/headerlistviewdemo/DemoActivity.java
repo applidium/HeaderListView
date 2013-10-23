@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.applidium.headerlistview.HeaderListView;
 import com.applidium.headerlistview.SectionAdapter;
@@ -90,6 +92,12 @@ public class DemoActivity extends Activity {
                     break;
                 }
                 return convertView;
+            }
+
+            @Override
+            public void onRowItemClick(AdapterView<?> parent, View view, int section, int row, long id) {
+                super.onRowItemClick(parent, view, section, row, id);
+                Toast.makeText(DemoActivity.this, "Section " + section + " Row " + row, Toast.LENGTH_SHORT).show();
             }
         });
         setContentView(list);
