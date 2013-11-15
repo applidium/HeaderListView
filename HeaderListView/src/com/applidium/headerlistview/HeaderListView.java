@@ -213,8 +213,8 @@ public class HeaderListView extends RelativeLayout {
                 int offset = mListView.computeVerticalScrollOffset();
                 int range = mListView.computeVerticalScrollRange();
                 int extent = mListView.computeVerticalScrollExtent();
-                int top = mListView.getHeight() * offset / range;
-                int bottom = mListView.getHeight() - mListView.getHeight() * (offset + extent) / range;
+                int top = range == 0 ? mListView.getHeight() : mListView.getHeight() * offset / range;
+                int bottom = range == 0 ? 0 : mListView.getHeight() - mListView.getHeight() * (offset + extent) / range;
                 mScrollView.setPadding(0, top, 0, bottom);
                 fadeOut.reset();
                 fadeOut.setFillBefore(true);
