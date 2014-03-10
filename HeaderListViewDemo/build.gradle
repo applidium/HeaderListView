@@ -1,4 +1,4 @@
-apply plugin: 'android-library'
+apply plugin: 'android'
 
 android {
     compileSdkVersion 19
@@ -10,13 +10,16 @@ android {
         versionCode 1
         versionName "1.0"
     }
-    release {
-        runProguard false
-        proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
     }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:+'
+    compile project(':HeaderListView')
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    compile 'com.android.support:appcompat-v7:+'
 }

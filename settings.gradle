@@ -1,1 +1,1 @@
-include 'HeaderListView'
+include ':HeaderListView', ':HeaderListViewDemo'
