@@ -204,6 +204,14 @@ public abstract class SectionAdapter extends BaseAdapter implements OnItemClickL
      * By default, disables section headers
      */
     public boolean isEnabled(int position) {
-        return !isSectionHeader(position);
+        return (disableHeaders() || !isSectionHeader(position)) && isRowEnabled(getSection(position), getRowInSection(position));
+    }
+
+    public boolean disableHeaders() {
+        return false;
+    }
+
+    public boolean isRowEnabled(int section, int row) {
+        return true;
     }
 }
