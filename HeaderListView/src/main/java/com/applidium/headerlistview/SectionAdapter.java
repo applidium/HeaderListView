@@ -120,7 +120,9 @@ public abstract class SectionAdapter extends BaseAdapter implements OnItemClickL
      */
     protected int getSection(int position) {
         int section = 0;
-        while (numberOfCellsBeforeSection(section) <= position) {
+        int cellCounter = 0;
+        while (cellCounter <= position && section <= numberOfSections()) {
+            cellCounter += numberOfCellsInSection(section);
             section++;
         }
         return section - 1;
@@ -155,12 +157,13 @@ public abstract class SectionAdapter extends BaseAdapter implements OnItemClickL
     protected int numberOfCellsBeforeSection(int section) {
         int count = 0;
         for (int i = 0; i < Math.min(numberOfSections(), section); i++) {
-            if (hasSectionHeaderView(i)) {
-                count += 1;
-            }
-            count += numberOfRows(i);
+            count += numberOfCellsInSection(i);
         }
         return count;
+    }
+
+    private int numberOfCellsInSection(int section) {
+        return numberOfRows(section) + (hasSectionHeaderView(section) ? 1 : 0);
     }
 
     @Override
