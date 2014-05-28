@@ -168,14 +168,14 @@ public abstract class SectionAdapter extends BaseAdapter implements OnItemClickL
 
     @Override
     public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
         mCount = numberOfCellsBeforeSection(numberOfSections());
+        super.notifyDataSetChanged();
     }
 
     @Override
     public void notifyDataSetInvalidated() {
-        super.notifyDataSetInvalidated();
         mCount = numberOfCellsBeforeSection(numberOfSections());
+        super.notifyDataSetInvalidated();
     }
 
     @Override
