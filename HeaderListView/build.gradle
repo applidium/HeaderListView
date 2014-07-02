@@ -1,13 +1,35 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
+dependencies {
+    compile 'com.android.support:appcompat-v7:19+'
+    compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+}
+
 publishing {
     publications {
         HeaderListView(MavenPublication) {
-            artifact './build/outputs/aar/' + project.name + type
+            artifact './build/outputs/aar/' + project.name + '-' + project.version + '.aar'
+
+            pom.withXml {
+                Node deps = asNode().appendNode('dependencies')
+                project.configurations.compile.dependencies.each() { obj ->
+                    if (obj.group?.trim()) {
+                        Node dep = new Node(deps, 'dependency')
+                        dep.appendNode('groupId', obj.group)
+                        dep.appendNode('artifactId', obj.name)
+                        dep.appendNode('version', obj.version)
+                        dep.appendNode('scope', 'compile')
+                    }
+                }
+            }
         }
     }
 }
+
+group 'com.applidium'
+version '1.0'
+ext.androidVersionCode = 1
 
 android {
     compileSdkVersion 19
@@ -16,12 +38,13 @@ android {
     defaultConfig {
         minSdkVersion 7
         targetSdkVersion 19
-        versionCode 1
-        versionName "1.0"
+        versionCode androidVersionCode
+        versionName version
     }
-}
 
-dependencies {
-    compile 'com.android.support:appcompat-v7:19+'
-    compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    buildTypes {
+        release {
+
+        }
+    }
 }
