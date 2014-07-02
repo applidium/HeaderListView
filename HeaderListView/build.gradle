@@ -1,8 +1,17 @@
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        HeaderListView(MavenPublication) {
+            artifact './build/outputs/aar/' + project.name + type
+        }
+    }
+}
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    buildToolsVersion "19.1.0"
 
     defaultConfig {
         minSdkVersion 7
