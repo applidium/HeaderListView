@@ -1,6 +1,6 @@
 # Quickstart
 
-1. Import the project in Eclipse then add it to the build path of your project.
+1. Import the HeaderListView module in your Android Studio project.
 2. Replace your `ListView` with `HeaderListView`
 3. Implement a subclass of `SectionAdapter`
 4. Set it to your `HeaderListView` with `setAdapter(SectionAdapter adapter)`
@@ -12,5 +12,4 @@
 # Future work
 
 - Handle listViews with fast scroll
-- Pass ListView XML attributes to the mListView
 - See if there are methods to dispatch to mListView
