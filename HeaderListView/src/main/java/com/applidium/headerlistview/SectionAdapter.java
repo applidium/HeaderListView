@@ -35,7 +35,7 @@ public abstract class SectionAdapter extends BaseAdapter implements OnItemClickL
     }
 
     public int getSectionHeaderViewTypeCount() {
-        return 0;
+        return 1;
     }
 
     /**
