@@ -18,7 +18,6 @@ import android.widget.RelativeLayout;
 public class HeaderListView extends RelativeLayout {
 
     // TODO: Handle listViews with fast scroll
-    // TODO: Pass ListView XML attributes to the mListView
     // TODO: See if there are methods to dispatch to mListView
 
     private static final int FADE_DELAY    = 1000;
@@ -31,16 +30,16 @@ public class HeaderListView extends RelativeLayout {
 
     public HeaderListView(Context context) {
         super(context);
-        init(context);
+        init(context, null);
     }
 
     public HeaderListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init(context, attrs);
     }
 
-    private void init(Context context) {
-        mListView = new InternalListView(getContext());
+    private void init(Context context, AttributeSet attrs) {
+        mListView = new InternalListView(getContext(), attrs);
         LayoutParams listParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         listParams.addRule(ALIGN_PARENT_TOP);
         mListView.setLayoutParams(listParams);
@@ -268,7 +267,7 @@ public class HeaderListView extends RelativeLayout {
     }
 
     public ListView getListView() {
-        return (ListView) mListView;
+        return mListView;
     }
     
     public void addHeaderView(View v) {
@@ -281,8 +280,8 @@ public class HeaderListView extends RelativeLayout {
 
     protected class InternalListView extends ListView {
 
-        public InternalListView(Context context) {
-            super(context);
+        public InternalListView(Context context, AttributeSet attrs) {
+            super(context, attrs);
         }
 
         @Override
