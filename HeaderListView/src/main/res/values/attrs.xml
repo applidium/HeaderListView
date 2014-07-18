@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HeaderListView">
+        <!--
+        Fully qualified name of list view class. Class must extend android.widget.ListView and
+        implement com.applidium.headerlistview.HeaderListView.InternalListView and must declare a
+        public constructor with parameters android.content.Context, android.util.AttributeSet
+        -->
+        <attr name="internalListViewClass" format="string" />
+    </declare-styleable>
+</resources>
