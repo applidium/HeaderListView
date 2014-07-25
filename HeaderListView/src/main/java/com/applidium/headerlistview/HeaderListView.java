@@ -2,6 +2,7 @@ package com.applidium.headerlistview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -123,6 +124,17 @@ public class HeaderListView extends RelativeLayout {
     public void setAdapter(SectionAdapter adapter) {
         mAdapter = adapter;
         mListView.setAdapter(adapter);
+        mAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                mHeader.removeAllViews();
+            }
+
+            @Override
+            public void onInvalidated() {
+                mHeader.removeAllViews();
+            }
+        });
     }
 
     private class HeaderListViewOnScrollListener implements AbsListView.OnScrollListener {
