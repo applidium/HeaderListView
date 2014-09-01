@@ -98,23 +98,30 @@ public class HeaderListView extends RelativeLayout {
         private View           next;
         private AlphaAnimation fadeOut                  = new AlphaAnimation(1f, 0f);
         private boolean        noHeaderUpToHeader       = false;
+        private boolean        didScroll = false;
 
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
+            didScroll = true;
         }
 
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            if (!didScroll) {
+                return;
+            }
 
             firstVisibleItem -= mListView.getHeaderViewsCount();
             if (firstVisibleItem < 0) {
                 mHeader.removeAllViews();
                 return;
             }
-            
+
             updateScrollBar();
-            if (totalItemCount > 0 && firstVisibleItem == 0) {
+            if (visibleItemCount > 0 && firstVisibleItem == 0 && mHeader.getChildAt(0) == null) {
                 addSectionHeader(0);
+                lastResetSection = 0;
             }
 
             int realFirstVisibleItem = getRealFirstVisibleItem(firstVisibleItem, visibleItemCount);
