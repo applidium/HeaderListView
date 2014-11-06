@@ -75,6 +75,7 @@ public class HeaderListView extends RelativeLayout {
         scrollIndicator.setImageDrawable(scrollBarDrawable);
         scrollIndicator.setScaleType(ScaleType.FIT_XY);
         mScrollView.addView(scrollIndicator);
+        mScrollView.setVisibility(INVISIBLE);
 
         addView(mScrollView);
     }
