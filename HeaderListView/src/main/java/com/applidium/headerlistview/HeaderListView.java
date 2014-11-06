@@ -27,6 +27,7 @@ public class HeaderListView extends RelativeLayout {
     private SectionAdapter   mAdapter;
     private RelativeLayout   mHeader;
     private FrameLayout      mScrollView;
+    private AbsListView.OnScrollListener mExternalOnScrollListener;
 
     public HeaderListView(Context context) {
         super(context);
@@ -85,6 +86,10 @@ public class HeaderListView extends RelativeLayout {
         mListView.setAdapter(adapter);
     }
 
+    public void setOnScrollListener(AbsListView.OnScrollListener l) {
+        mExternalOnScrollListener = l;
+    }
+
     private class HeaderListViewOnScrollListener implements AbsListView.OnScrollListener {
 
         private int            previousFirstVisibleItem = -1;
@@ -103,11 +108,17 @@ public class HeaderListView extends RelativeLayout {
 
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
+            if (mExternalOnScrollListener != null) {
+                mExternalOnScrollListener.onScrollStateChanged(view, scrollState);
+            }
             didScroll = true;
         }
 
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            if (mExternalOnScrollListener != null) {
+                mExternalOnScrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+            }
 
             if (!didScroll) {
                 return;
