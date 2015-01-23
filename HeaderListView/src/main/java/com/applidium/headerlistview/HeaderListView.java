@@ -26,6 +26,7 @@ public class HeaderListView extends RelativeLayout {
     private InternalListView mListView;
     private SectionAdapter   mAdapter;
     private RelativeLayout   mHeader;
+    private View             mHeaderConvertView;
     private FrameLayout      mScrollView;
     private AbsListView.OnScrollListener mExternalOnScrollListener;
 
@@ -259,15 +260,15 @@ public class HeaderListView extends RelativeLayout {
             }
 
             if (mAdapter.hasSectionHeaderView(actualSection)) {
-                View header = mAdapter.getSectionHeaderView(actualSection, null, null);
-                header.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                mHeaderConvertView = mAdapter.getSectionHeaderView(actualSection, mHeaderConvertView, mHeader);
+                mHeaderConvertView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
-                header.measure(MeasureSpec.makeMeasureSpec(mHeader.getWidth(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                mHeaderConvertView.measure(MeasureSpec.makeMeasureSpec(mHeader.getWidth(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 
-                mHeader.getLayoutParams().height = header.getMeasuredHeight();
-                header.scrollTo(0, 0);
+                mHeader.getLayoutParams().height = mHeaderConvertView.getMeasuredHeight();
+                mHeaderConvertView.scrollTo(0, 0);
                 mHeader.scrollTo(0, 0);
-                mHeader.addView(header, 0);
+                mHeader.addView(mHeaderConvertView, 0);
             } else {
                 mHeader.getLayoutParams().height = 0;
                 mHeader.scrollTo(0, 0);
