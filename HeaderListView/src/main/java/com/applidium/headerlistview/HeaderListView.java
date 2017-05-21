@@ -1,7 +1,10 @@
 package com.applidium.headerlistview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -15,6 +18,9 @@ import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 public class HeaderListView extends RelativeLayout {
 
     // TODO: Handle listViews with fast scroll
@@ -23,7 +29,7 @@ public class HeaderListView extends RelativeLayout {
     private static final int FADE_DELAY    = 1000;
     private static final int FADE_DURATION = 2000;
 
-    private InternalListView mListView;
+    private ListView mListView;
     private SectionAdapter   mAdapter;
     private RelativeLayout   mHeader;
     private View             mHeaderConvertView;
@@ -41,7 +47,7 @@ public class HeaderListView extends RelativeLayout {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        mListView = new InternalListView(getContext(), attrs);
+        mListView = createInternalListView(attrs);
         LayoutParams listParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         listParams.addRule(ALIGN_PARENT_TOP);
         mListView.setLayoutParams(listParams);
@@ -82,9 +88,56 @@ public class HeaderListView extends RelativeLayout {
         addView(mScrollView);
     }
 
+    private ListView createInternalListView(AttributeSet attrs) {
+        TypedArray attrValues = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.HeaderListView, 0, 0);
+        String internalListViewClass;
+        try {
+            internalListViewClass = attrValues.getString(R.styleable.HeaderListView_internalListViewClass);
+        } finally {
+            attrValues.recycle();
+        }
+        if (TextUtils.isEmpty(internalListViewClass)) {
+            return new DefaultInternalListView(getContext(), attrs);
+        } else {
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(internalListViewClass);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("InternalListViewClass not found", e);
+            }
+            if (InternalListView.class.isAssignableFrom(clazz) && ListView.class.isAssignableFrom(clazz)) {
+                try {
+                    Constructor<?> constructor = clazz.getDeclaredConstructor(Context.class, AttributeSet.class);
+                    return (ListView) constructor.newInstance(getContext(), attrs);
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalArgumentException("InternalListViewClass must declare public constructor with parameters android.content.Context, android.util.AttributeSet", e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException("Failed to instantiate InternalListViewClass", e);
+                } catch (InstantiationException e) {
+                    throw new IllegalArgumentException("InternalListViewClass must declare public constructor with parameters android.content.Context, android.util.AttributeSet", e);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalArgumentException("InternalListViewClass must declare public constructor with parameters android.content.Context, android.util.AttributeSet", e);
+                }
+            } else {
+                throw new IllegalArgumentException("InternalListViewClass must extend android.widget.ListView and implement com.applidium.headerlistview.HeaderListView.InternalListView");
+            }
+        }
+    }
+
     public void setAdapter(SectionAdapter adapter) {
         mAdapter = adapter;
         mListView.setAdapter(adapter);
+        mAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                mHeader.removeAllViews();
+            }
+
+            @Override
+            public void onInvalidated() {
+                mHeader.removeAllViews();
+            }
+        });
     }
 
     public void setOnScrollListener(AbsListView.OnScrollListener l) {
@@ -233,9 +286,9 @@ public class HeaderListView extends RelativeLayout {
 
         private void updateScrollBar() {
             if (mHeader != null && mListView != null && mScrollView != null) {
-                int offset = mListView.computeVerticalScrollOffset();
-                int range = mListView.computeVerticalScrollRange();
-                int extent = mListView.computeVerticalScrollExtent();
+                int offset = ((InternalListView) mListView).computeVerticalScrollOffset();
+                int range = ((InternalListView) mListView).computeVerticalScrollRange();
+                int extent = ((InternalListView) mListView).computeVerticalScrollExtent();
                 mScrollView.setVisibility(extent >= range ? View.INVISIBLE : View.VISIBLE);
                 if (extent >= range) {
                     return;
@@ -281,7 +334,7 @@ public class HeaderListView extends RelativeLayout {
             if (visibleItemCount == 0) {
                 return -1;
             }
-            int relativeIndex = 0, totalHeight = mListView.getChildAt(0).getTop();
+            int relativeIndex, totalHeight = mListView.getChildAt(0).getTop();
             for (relativeIndex = 0; relativeIndex < visibleItemCount && totalHeight < mHeader.getHeight(); relativeIndex++) {
                 totalHeight += mListView.getChildAt(relativeIndex).getHeight();
             }
@@ -302,25 +355,34 @@ public class HeaderListView extends RelativeLayout {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
     }
 
-    protected class InternalListView extends ListView {
+    protected class DefaultInternalListView extends ListView implements InternalListView {
 
-        public InternalListView(Context context, AttributeSet attrs) {
+        public DefaultInternalListView(Context context, AttributeSet attrs) {
             super(context, attrs);
         }
 
         @Override
-        protected int computeVerticalScrollExtent() {
+        public int computeVerticalScrollExtent() {
             return super.computeVerticalScrollExtent();
         }
 
         @Override
-        protected int computeVerticalScrollOffset() {
+        public int computeVerticalScrollOffset() {
             return super.computeVerticalScrollOffset();
         }
 
         @Override
-        protected int computeVerticalScrollRange() {
+        public int computeVerticalScrollRange() {
             return super.computeVerticalScrollRange();
         }
     }
+
+    public interface InternalListView {
+        int computeVerticalScrollExtent();
+
+        int computeVerticalScrollOffset();
+
+        int computeVerticalScrollRange();
+    }
+
 }
